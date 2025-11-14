@@ -14,9 +14,11 @@ app.use(cors({
 
 /* routes */
 const AuthRouter = require("./routes/auth.routes");
+const AlertRouter = require("./routes/alert.routes");
 
 /* using routes */
 app.use('/api/auth',AuthRouter);
+app.use('/api/alert',AlertRouter);
 
 app.get("/", (req, res) => {
   res.send("Hello World!");
