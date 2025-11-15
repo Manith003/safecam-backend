@@ -37,5 +37,5 @@ exports.dismissAlert = async (req, res) => {
 // Dashboard fetches all alerts
 exports.getAlerts = async (req, res) => {
   const alerts = await Alert.find().sort({ timestamp: -1 });
-  res.json(alerts);
+  res.json({success: true, alerts});
 };
