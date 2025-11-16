@@ -18,8 +18,9 @@ function initSocket(server) {
       socket.join(data.deviceId);
     });
 
-    socket.on("video_frame", (data) => {
-      io.emit("video_frame_broadcast", data);
+    socket.on("dashboard_ready", (data) => {
+      console.log("📺 Dashboard ready:", data.deviceId);
+      io.to(data.deviceId).emit("start_webrtc");
     });
 
     socket.on("new_alert", (data) => {
@@ -30,6 +31,20 @@ function initSocket(server) {
     socket.on("trigger_siren", (data) => {
       console.log("Trigger Siren received from dashboard:", data);
       io.emit("trigger_siren", data);
+    });
+
+    socket.on("webrtc_offer", (data) => {
+      console.log("📡 webrtc_offer from", data.deviceId);
+      io.emit("webrtc_offer", data);
+    });
+
+    socket.on("webrtc_answer", (data) => {
+      console.log("📡 webrtc_answer for", data.deviceId);
+      io.to(data.deviceId).emit("webrtc_answer", data);
+    });
+
+    socket.on("webrtc_ice_candidate", (data) => {
+      io.emit("webrtc_ice_candidate", data);
     });
 
     socket.on("disconnect", () => {
