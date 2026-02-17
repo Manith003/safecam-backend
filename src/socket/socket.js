@@ -1,4 +1,5 @@
 const { Server } = require("socket.io");
+const { sendSMS } = require("../services/smsService");
 
 let io;
 
@@ -28,9 +29,32 @@ function initSocket(server) {
       io.emit("new_alert_broadcast", data);
     });
 
-    socket.on("trigger_siren", (data) => {
-      console.log("Trigger Siren received from dashboard:", data);
-      io.emit("trigger_siren", data);
+    // socket.on("trigger_siren", (data) => {
+    //   console.log("Trigger Siren received from dashboard:", data);
+    //   io.emit("trigger_siren", data);
+    // });
+
+    socket.on("trigger_siren", async (data) => {
+      console.log("🚨 Confirmed Alert:", data);
+
+      // 1️⃣ Trigger siren on Pi
+      io.to(data.deviceId).emit("trigger_siren", data);
+
+      // 2️⃣ Send SMS
+      const mapsLink = `https://maps.google.com/?q=${data.latitude},${data.longitude}`;
+
+      const message = `
+🚨 ALERT CONFIRMED!
+
+Device: ${data.deviceId}
+
+Location:
+${mapsLink}
+
+Immediate attention required.
+`;
+
+      await sendSMS(message);
     });
 
     socket.on("webrtc_offer", (data) => {
